@@ -13,7 +13,6 @@ const findAllTodo = (req, res) => {
       }
     })
   })
-
 }
 
 const createTodo = (req, res) => {
@@ -21,7 +20,8 @@ const createTodo = (req, res) => {
     Todo.create({
       title: req.body.title,
       content: req.body.content,
-      penulis: user.id
+      penulis: user.id,
+      done: false
     })
     .then((dataTodo) => {
       res.send({
@@ -37,7 +37,7 @@ const createTodo = (req, res) => {
 }
 
 const findByIdTodo = (req, res) => {
-  Todo.find()
+  Todo.findById(req.params.id)
   .then((dataTodo) => {
     res.send(dataTodo)
   })
@@ -51,7 +51,8 @@ const updateTodo = (req, res) => {
     _id: ObjectId(req.params.id)
   },{
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    done: req.body.done
   })
   .then((dataTodo)=>{
     res.send({

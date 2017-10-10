@@ -2,6 +2,62 @@ const Users = require('../models/users')
 const ObjectId = require('mongodb').ObjectId
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const FB = require('fb')
+require('dotenv').config()
+
+
+const loginFb = (req, res) => {
+  FB.api('/me', {fields: ['id','name','email']}, (response) => {
+    console.log('ini response dari fb /me', response)
+    Users.find({
+      fb_id: response.id
+    })
+    .then(dataUser => {
+      if (dataUser.length == 0) {
+        Users.create({
+          fb_id: response.id,
+          name: response.name,
+          email: response.email
+        })
+        .then(userCreated => {
+          console.log('ini hasil user create: ', userCreated);
+
+          let token = jwt.sign({
+            id: userCreated._id,
+            fb_id: userCreated.fb_id,
+            name: userCreated.name,
+            email: userCreated.email
+          }, process.env.SECRET)
+
+          res.send({
+            message: 'login success',
+            token: token
+          })
+        })
+        .catch(err => {
+          res.send(err)
+        })
+      } else {
+        console.log('ini hasil find user:', dataUser);
+        let token = jwt.sign({
+          id: dataUser[0]._id,
+          fb_id: dataUser[0].fb_id,
+          name: dataUser[0].name,
+          email: dataUser[0].email
+        }, process.env.SECRET)
+
+        res.send({
+          message: 'login success',
+          token: token
+        })
+      }
+    })
+    .catch(err => {
+      res.send(err)
+    })
+  })
+
+}
 
 const findAllUsers = (req, res) => {
   Users.find({})
@@ -16,7 +72,7 @@ const findAllUsers = (req, res) => {
   })
 }
 
-const createUsers = (req, res) => {
+const userRegister = (req, res) => {
   let salt = bcrypt.genSaltSync(10);
   let hash = bcrypt.hashSync(`${req.body.password}`, salt);
   Users.create({
@@ -108,9 +164,11 @@ const removeUsers = (req, res) =>{
   })
 }
 
+
 module.exports = {
+  loginFb,
   findAllUsers,
-  createUsers,
+  userRegister,
   userLogin,
   findByIdUser,
   updateUser,

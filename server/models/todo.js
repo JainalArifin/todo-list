@@ -6,7 +6,8 @@ const todoSchema = new mongoose.Schema({
   content: String,
   penulis: {
     type: Schema.Types.ObjectId, ref: 'users'
-  }
+  },
+  done: Boolean
 })
 
 const todo = mongoose.model('todo', todoSchema)
