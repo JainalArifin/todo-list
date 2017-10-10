@@ -14,7 +14,7 @@ var todo = require('./routes/todo');
 var app = express();
 app.use(cors())
 
-mongoose.connect('mongodb://localhost/todolist', (err)=>{
+mongoose.connect('mongodb://jainal:pakuhaji@cluster0-shard-00-00-yo6se.mongodb.net:27017,cluster0-shard-00-01-yo6se.mongodb.net:27017,cluster0-shard-00-02-yo6se.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin', (err)=>{
   if(!err) console.log('Database sudah terhubung');
   else console.log('Database sudah terhubung');
 })
